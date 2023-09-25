@@ -23,13 +23,19 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-    
+    const database = client.db("usersDB");
+    const usersCollection = database.collection("users");
     app.post('/users', async(req,res)=>{
         const user= req.body;
         console.log('new user', user)
+        const result = await usersCollection.insertOne(user);
+        res.send(result)
     })
+
+    
+    // Print the ID of the inserted document
+    console.log(`A document was inserted with the _id: ${result.insertedId}`);
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
